@@ -26,11 +26,122 @@
 <div id="md" style="display: none;">
 <!-- markdown -->
 <center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/other_image/captcha-conchords-robots.jpg)</center>
+
+我是一名 iOS 程序员, C 语言和 Objective-C 是必须要精通的两门语言. 这里对 C 语言做一个总体的概览, 认识下它.
+
+## 指针
+ 之前, 我所理解的 C 只是一个工具, 一个极其简单的工具, 直到学到指针.
+指针这个东西其实很好玩, 就像一个吸管, 直接向椰子中插进去, 你吸干了其中的美味汁液, 然而外表却没有凹陷形变, 带来视觉上的变化,事实上,里面已经空了...... 指针有利有弊, 直觉上使用指针操作数据十分方便, 然而我认为: **指针是迫不得已才出现的.** 举个例子:
+
+~~~~{c}
+#include <stdio.h>
+#include <math.h>
+
+int main(int argc, const char * argv[]) {
+	
+	double pi = 3.14;
+	double integerPart;
+	double fractionPart;
+	fractionPart = modf(pi, &integerPart);
+	printf("integerPart == %.0f\n", integerPart);
+	printf("fractionPart == %.2f\n", fractionPart);
+	return 0;
+}
+~~~~
+编译运行程序将输出:
+
+~~~~
+integerPart == 3
+fractionPart == 0.14
+~~~~
+
+`modf()` 是 C 语言标准库中的一个函数, 调用这个函数并传入一个 double 类型的数据, 可以得到该浮点数的整数部分和小数部分. 注意, 是**可以 "同时" 得到该浮点数的整数部分和小数部分**.  一个函数的返回值只能有一个, 怎么做到同时返回? 看看 `modf()` 的形参:
+
+~~~~{c}
+modf( double arg, double* iptr );
+~~~~
+
+第二个参数是 `double *iptr`, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为**通过引用传递 (pass-by- reference)** 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解
+
+~~~~{c}
+#include <stdio.h>
+
+int main(int argc, const char * argv[]) {
+	int num = 100;
+	printf("num 的值是: %d\n", num);
+	int *p = &ampnum; // 定义一个指针, 并指向 num 的地址
+	*p = 521; // 通过指针修改指针所指向的内存地址的数据的值
+	printf("num 的值是: %d\n", num);
+	return 0;
+}
+~~~~
+
+编译运行程序将输出:
+
+~~~~
+num 的值是: 100
+num 的值是: 521
+~~~~
+
+通过 num 变量值的变化, 就能感受到指针的强大功能. 设想, 在 C 语言中如果没有指针, 该如何让一个函数同时改变两个甚至多个数据的值呢? 所以, 我认为指针是 C 中必然要出现的.
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/other_image/captcha-conchords-robots.jpg" alt="" title=""></center><p></p>
+
+<p>我是一名 iOS 程序员, C 语言和 Objective-C 是必须要精通的两门语言. 这里对 C 语言做一个总体的概览, 认识下它.</p>
+
+<h2 id="">指针</h2>
+
+<p>之前, 我所理解的 C 只是一个工具, 一个极其简单的工具, 直到学到指针.
+指针这个东西其实很好玩, 就像一个吸管, 直接向椰子中插进去, 你吸干了其中的美味汁液, 然而外表却没有凹陷形变, 带来视觉上的变化,事实上,里面已经空了...... 指针有利有弊, 直觉上使用指针操作数据十分方便, 然而我认为: <strong>指针是迫不得已才出现的.</strong> 举个例子:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token property">#include <span class="token property">&lt;stdio.h&gt;</span></span>
+<span class="token property">#include <span class="token property">&lt;math.h&gt;</span></span>
+
+<span class="token keyword">int</span> <span class="token function">main<span class="token punctuation">(</span></span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">double</span> pi <span class="token operator">=</span> <span class="token number">3.14</span><span class="token punctuation">;</span>
+    <span class="token keyword">double</span> integerPart<span class="token punctuation">;</span>
+    <span class="token keyword">double</span> fractionPart<span class="token punctuation">;</span>
+    fractionPart <span class="token operator">=</span> <span class="token function">modf<span class="token punctuation">(</span></span>pi<span class="token punctuation">,</span> <span class="token operator">&amp;</span>integerPart<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"integerPart == %.0f\n"</span><span class="token punctuation">,</span> integerPart<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"fractionPart == %.2f\n"</span><span class="token punctuation">,</span> fractionPart<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>编译运行程序将输出:
+
+<pre><code>integerPart == 3
+fractionPart == 0.14
+</code></pre>
+
+<p><code>modf()</code> 是 C 语言标准库中的一个函数, 调用这个函数并传入一个 double 类型的数据, 可以得到该浮点数的整数部分和小数部分. 注意, 是<strong>可以 "同时" 得到该浮点数的整数部分和小数部分</strong>.  一个函数的返回值只能有一个, 怎么做到同时返回? 看看 <code>modf()</code> 的形参:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token function">modf<span class="token punctuation">(</span></span> <span class="token keyword">double</span> arg<span class="token punctuation">,</span> <span class="token keyword">double</span><span class="token operator">*</span> iptr <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+
+<p>第二个参数是 <code>double *iptr</code>, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为<strong>通过引用传递 (pass-by- reference)</strong> 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token property">#include <span class="token property">&lt;stdio.h&gt;</span></span>
+
+<span class="token keyword">int</span> <span class="token function">main<span class="token punctuation">(</span></span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">int</span> num <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"num 的值是: %d\n"</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token operator">&amp;</span>num<span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // 定义一个指针, 并指向 num 的地址
+</span>    <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token number">521</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // 通过指针修改指针所指向的内存地址的数据的值
+</span>    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"num 的值是: %d\n"</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+<p>编译运行程序将输出:</p>
+
+<pre><code>num 的值是: 100
+num 的值是: 521
+</code></pre>
+
+<p>通过 num 变量值的变化, 就能感受到指针的强大功能. 设想, 在 C 语言中如果没有指针, 该如何让一个函数同时改变两个甚至多个数据的值呢? 所以, 我认为指针是 C 中必然要出现的.</p>
 <!-- content end -->
 </div>
 <br>
