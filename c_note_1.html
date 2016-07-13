@@ -61,7 +61,7 @@ fractionPart == 0.14
 modf( double arg, double* iptr );
 ~~~~
 
-第二个参数是 `double *iptr`, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为**通过引用传递 (pass-by- reference)** 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解
+第二个参数是 `double *iptr`, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为**通过引用传递 (pass-by- reference)** 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解:
 
 ~~~~{c}
 #include <stdio.h>
@@ -121,7 +121,7 @@ fractionPart == 0.14
 <pre class=" language-c"><code class=" language-c"><span class="token function">modf<span class="token punctuation">(</span></span> <span class="token keyword">double</span> arg<span class="token punctuation">,</span> <span class="token keyword">double</span><span class="token operator">*</span> iptr <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 
-<p>第二个参数是 <code>double *iptr</code>, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为<strong>通过引用传递 (pass-by- reference)</strong> 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解</p>
+<p>第二个参数是 <code>double *iptr</code>, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为<strong>通过引用传递 (pass-by- reference)</strong> 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解:</p>
 
 <pre class=" language-c"><code class=" language-c"><span class="token property">#include <span class="token property">&lt;stdio.h&gt;</span></span>
 
