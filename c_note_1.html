@@ -26,10 +26,6 @@
 <div id="md" style="display: none;">
 <!-- markdown -->
 <center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/other_image/captcha-conchords-robots.jpg)</center>
-
->我是一名 iOS 程序员, C 语言和 Objective-C 是必须要精通的两门语言. 这里对 C 语言做一个总体的概览, 认识下它.
-
-## 关于指针
  之前, 我所理解的 C 只是一个工具, 一个极其简单的工具, 直到遇到指针, 就觉得 C 语言变得深奥起来. 
 指针这个东西其实很好玩, 就像一个吸管, 直接向椰子中插进去, 你吸干了其中的美味汁液, 然而外表却没有凹陷形变, 带来视觉上的变化,事实上,里面已经空了...... 用指针操作数据十分方便. 我个人认为: **指针在C语言中是迫不得已才出现的,** 举个例子:
 
@@ -86,112 +82,13 @@ num 的值是: 521
 
 通过 num 变量值的变化, 就能感受到指针的强大功能. 设想, 在 C 语言中如果没有指针, 该如何让一个函数同时改变两个甚至多个数据的值呢? 所以, 我认为指针是 C 中必然要出现的.
 
-## 数据和数据类型
-
-对于个人来说, 这部分知识食之无味, 弃只有肉, 但是确实是 C 语言的基础. 
-
-* 位, 字节和字: 这三者是描述计算机数据单元或存储单元的术语:
- * 最小的存储单元是位 (bit), 可以存储0或1 (或者 "开" 或 "关"), 位是计算机内存的基本构块.
- * 字节 (byte) 是计算机常用的存数单位, 几乎所有的计算机1个字节都为8位.
- * 字 (word) 是设计计算机时给定的自然存储单位. 计算机的字节长度越大, 其数据转移越快, 允许内存访问也更多.
-
-* 常量和变量: 有些数据类型在在程序使用之前已经预先设定好了, 而且在整个程序的运行过程中没有发生变化, 这就是常量. 其他数据类型在程序运行期间可能被改变或赋值, 这些称为变量.
-
-* 整数和浮点数: 对于计算机来说, 整数和浮点数仅仅是存储方式不同. 整数是没有小数的部分, 计算机使用二进制来存储整数. 浮点数就是带小数的数, 计算机把浮点数拆分成小数部分和整数部分来表示, 这样而言 7 和 7.000 虽然数值相同, 但在存储方式上就不一样了. 注意浮点数通常只是实际值的近值.
-
-* C 语言的基本数据类型:
-
-<table border="1">
-<tr>
-<th>数据类型</th>
-<th>含义</th>
-<th>打印字符</th>
-</tr>
-<tr>
-<td>int</td>
-<td>整形</td>
-<td>%d</td>
-</tr>
-<tr>
-<td>long int (long)</td>
-<td>长整形</td>
-<td>%ld</td>
-</tr>
-<tr>
-<td>long long int (long long)</td>
-<td>长长整形</td>
-<td>%lld</td>
-</tr>
-<tr>
-<td>short in (short)</td>
-<td>短整形</td>
-<td>%hd</td>
-</tr>
-<tr>
-<td>float</td>
-<td>单精度浮点型</td>
-<td>%e %f</td>
-</tr>
-<tr>
-<td>double</td>
-<td>双精度浮点型0</td>
-<td>%e %f</td>
-</tr>
-<tr>
-<td>long double</td>
-<td>长双精度浮点型0</td>
-<td>%Le %Lf</td>
-</tr>
-<tr>
-<td>char</td>
-<td>字符型</td>
-<td>%c</td>
-</tr>
-<tr>
-<td>_Bool</td>
-<td>布尔类型</td>
-<td>%d</td>
-</tr>
-</table>
-
-这几种基本数据类型默认都是有符号的 (signed), 可以加无符号修饰符 (unsigned) 将其修改为无符号的.  无符号长整形的打印符号为 `%lu` , 注意, 无符号的数据类型只适合需要非负值的地方.
-
-* 八进制和十六进制的打印:
-
-~~~~{c}
-#include <stdio.h>
-
-int main(){
-	int x = 100;
-	printf("%dec = %d; octal = %o; hex = %x  \n" , x, x, x );
-	printf("%dec = %d; octal = %#o; hex = %#x  \n" , x, x, x ); // 8进制和16进制显示相应的前缀
-	return 0;
-}
-~~~~
-
-输出:
-
-~~~~
-100ec = 100; octal = 144; hex = 64  
-100ec = 100; octal = 0144; hex = 0x64 
-~~~~
-
-
-#(未完)
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/other_image/captcha-conchords-robots.jpg" alt="" title=""></center><p></p>
-
-<blockquote>
-  <p>我是一名 iOS 程序员, C 语言和 Objective-C 是必须要精通的两门语言. 这里对 C 语言做一个总体的概览, 认识下它.</p>
-</blockquote>
-
-<h2 id="">关于指针</h2>
-
-<p>之前, 我所理解的 C 只是一个工具, 一个极其简单的工具, 直到遇到指针, 就觉得 C 语言变得深奥起来. 
-指针这个东西其实很好玩, 就像一个吸管, 直接向椰子中插进去, 你吸干了其中的美味汁液, 然而外表却没有凹陷形变, 带来视觉上的变化,事实上,里面已经空了...... 用指针操作数据十分方便. 我个人认为: <strong>指针在C语言中是迫不得已才出现的,</strong> 举个例子:</p>
+<p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/other_image/captcha-conchords-robots.jpg" alt="" title=""></center>
+ 之前, 我所理解的 C 只是一个工具, 一个极其简单的工具, 直到遇到指针, 就觉得 C 语言变得深奥起来. 
+指针这个东西其实很好玩, 就像一个吸管, 直接向椰子中插进去, 你吸干了其中的美味汁液, 然而外表却没有凹陷形变, 带来视觉上的变化,事实上,里面已经空了...... 用指针操作数据十分方便. 我个人认为: <strong>指针在C语言中是迫不得已才出现的,</strong> 举个例子:<p></p>
 
 <pre class=" language-c"><code class=" language-c"><span class="token property">#include <span class="token property">&lt;stdio.h&gt;</span></span>
 <span class="token property">#include <span class="token property">&lt;math.h&gt;</span></span>
@@ -239,98 +136,6 @@ num 的值是: 521
 <p>程序并没有直接改变变量 num 存储的值, 而是通过操作指针来改变. 使用指针改变 num 变量的值也是一个<strong>间接</strong>的例子.</p>
 
 <p>通过 num 变量值的变化, 就能感受到指针的强大功能. 设想, 在 C 语言中如果没有指针, 该如何让一个函数同时改变两个甚至多个数据的值呢? 所以, 我认为指针是 C 中必然要出现的.</p>
-
-<h2 id="">数据和数据类型</h2>
-
-<p>对于个人来说, 这部分知识食之无味, 弃只有肉, 但是确实是 C 语言的基础. </p>
-
-<ul>
-<li><p>位, 字节和字: 这三者是描述计算机数据单元或存储单元的术语:</p>
-
-<ul><li>最小的存储单元是位 (bit), 可以存储0或1 (或者 "开" 或 "关"), 位是计算机内存的基本构块.</li>
-<li>字节 (byte) 是计算机常用的存数单位, 几乎所有的计算机1个字节都为8位.</li>
-<li>字 (word) 是设计计算机时给定的自然存储单位. 计算机的字节长度越大, 其数据转移越快, 允许内存访问也更多.</li></ul></li>
-<li><p>常量和变量: 有些数据类型在在程序使用之前已经预先设定好了, 而且在整个程序的运行过程中没有发生变化, 这就是常量. 其他数据类型在程序运行期间可能被改变或赋值, 这些称为变量.</p></li>
-<li><p>整数和浮点数: 对于计算机来说, 整数和浮点数仅仅是存储方式不同. 整数是没有小数的部分, 计算机使用二进制来存储整数. 浮点数就是带小数的数, 计算机把浮点数拆分成小数部分和整数部分来表示, 这样而言 7 和 7.000 虽然数值相同, 但在存储方式上就不一样了. 注意浮点数通常只是实际值的近值.</p></li>
-<li><p>C 语言的基本数据类型:</p></li>
-</ul>
-
-<table border="1">
-<tbody><tr>
-<th>数据类型</th>
-<th>含义</th>
-<th>打印字符</th>
-</tr>
-<tr>
-<td>int</td>
-<td>整形</td>
-<td>%d</td>
-</tr>
-<tr>
-<td>long int (long)</td>
-<td>长整形</td>
-<td>%ld</td>
-</tr>
-<tr>
-<td>long long int (long long)</td>
-<td>长长整形</td>
-<td>%lld</td>
-</tr>
-<tr>
-<td>short in (short)</td>
-<td>短整形</td>
-<td>%hd</td>
-</tr>
-<tr>
-<td>float</td>
-<td>单精度浮点型</td>
-<td>%e %f</td>
-</tr>
-<tr>
-<td>double</td>
-<td>双精度浮点型0</td>
-<td>%e %f</td>
-</tr>
-<tr>
-<td>long double</td>
-<td>长双精度浮点型0</td>
-<td>%Le %Lf</td>
-</tr>
-<tr>
-<td>char</td>
-<td>字符型</td>
-<td>%c</td>
-</tr>
-<tr>
-<td>_Bool</td>
-<td>布尔类型</td>
-<td>%d</td>
-</tr>
-</tbody></table>
-
-<p>这几种基本数据类型默认都是有符号的 (signed), 可以加无符号修饰符 (unsigned) 将其修改为无符号的.  无符号长整形的打印符号为 <code>%lu</code> , 注意, 无符号的数据类型只适合需要非负值的地方.</p>
-
-<ul>
-<li>八进制和十六进制的打印:</li>
-</ul>
-
-<pre class=" language-c"><code class=" language-c"><span class="token property">#include <span class="token property">&lt;stdio.h&gt;</span></span>
-
-<span class="token keyword">int</span> <span class="token function">main<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">int</span> x <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">;</span>
-    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"%dec = %d; octal = %o; hex = %x  \n"</span> <span class="token punctuation">,</span> x<span class="token punctuation">,</span> x<span class="token punctuation">,</span> x <span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf<span class="token punctuation">(</span></span><span class="token string">"%dec = %d; octal = %#o; hex = %#x  \n"</span> <span class="token punctuation">,</span> x<span class="token punctuation">,</span> x<span class="token punctuation">,</span> x <span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // 8进制和16进制显示相应的前缀
-</span>    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre>
-
-<p>输出:</p>
-
-<pre><code>100ec = 100; octal = 144; hex = 64  
-100ec = 100; octal = 0144; hex = 0x64 
-</code></pre>
-
-<h1 id="">(未完)</h1>
 <!-- content end -->
 </div>
 <br>
