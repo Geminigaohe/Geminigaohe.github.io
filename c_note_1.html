@@ -53,7 +53,7 @@ fractionPart == 0.14
 `modf()` 是 C 语言标准库中的一个函数, 调用这个函数并传入一个 double 类型的数据, 可以得到该浮点数的整数部分和小数部分. 注意, 是**可以得到该浮点数的整数部分和小数部分**.  一个函数的返回值只能有一个, 怎么做到同时修改两个传递过来的数据? 看看 `modf()` 的形参:
 
 ~~~~{c}
-modf( double arg, double* iptr );
+double modf( double arg, double* iptr );
 ~~~~
 
 第二个参数是 `double *iptr`, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为**通过引用传递 (pass-by- reference)** 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解:
@@ -110,7 +110,7 @@ fractionPart == 0.14
 
 <p><code>modf()</code> 是 C 语言标准库中的一个函数, 调用这个函数并传入一个 double 类型的数据, 可以得到该浮点数的整数部分和小数部分. 注意, 是<strong>可以得到该浮点数的整数部分和小数部分</strong>.  一个函数的返回值只能有一个, 怎么做到同时修改两个传递过来的数据? 看看 <code>modf()</code> 的形参:</p>
 
-<pre class=" language-c"><code class=" language-c"><span class="token function">modf<span class="token punctuation">(</span></span> <span class="token keyword">double</span> arg<span class="token punctuation">,</span> <span class="token keyword">double</span><span class="token operator">*</span> iptr <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class=" language-c"><code class=" language-c"><span class="token keyword">double</span> <span class="token function">modf<span class="token punctuation">(</span></span> <span class="token keyword">double</span> arg<span class="token punctuation">,</span> <span class="token keyword">double</span><span class="token operator">*</span> iptr <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 
 <p>第二个参数是 <code>double *iptr</code>, 带个星号, 它就是说是一个指针, 传入的是数据的内存地址(也称为引用), 这种参数传入方法称为<strong>通过引用传递 (pass-by- reference)</strong> 也就是通过指针来改变指针所指向的内存地址的数据的值. 加个例子方便理解:</p>
