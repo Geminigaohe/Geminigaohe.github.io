@@ -1,0 +1,412 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+
+## 一个简单的应用, 直接上代码:
+~~~~{c}
+//
+//  ViewController.m
+//  MyPlayer
+//
+//  Created by GaoHe on 16/7/12.
+//  Copyright © 2016年 GaoHe. All rights reserved.
+//
+
+
+// 引入 AVFoundation 框架
+#import <AVFoundation/AVFoundation.h>
+#import "ViewController.h"
+
+@interface ViewController() {
+    // 播放列表
+    NSArray *_arrayPlayList;
+    // 播放器
+    AVPlayer *_player;
+    // 当前播放的引索值
+    int _currentPlayIndex;
+    // 播放状态
+    BOOL _isPlaying;
+}
+
+// 播放进度 Slider
+@property (weak, nonatomic)IBOutlet UISlider *sliderProgress;
+
+// 缓存进度
+@property (weak, nonatomic) IBOutlet UIProgressView *progressView;
+
+//播放按钮
+@property (weak, nonatomic) IBOutlet UIButton *playButton;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor grayColor];
+    
+    // 程序开始时没有播放
+    [self.playButton setEnabled:NO];
+    self.sliderProgress.value = 0;
+    _isPlaying = NO;
+    
+    // 设置播放列表
+    NSURL *playUrl_1 = [NSURL URLWithString:playUrl_1];
+    
+    NSURL *playUrl_2 = [NSURL URLWithString:playUrl_2];
+    
+    NSURL *playUrl_3 = [NSURL URLWithString:playUrl_3];
+    
+    NSURL *playUrl_4 = [NSURL URLWithString:playUrl_4];
+    
+    _arrayPlayList = @[playUrl_1, playUrl_2, playUrl_3, playUrl_4];
+    AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:playUrl_1];
+    
+    // 初始化播放器, 默认播放第一首
+    _player = [[AVPlayer alloc] initWithPlayerItem:item];
+    // 播放完成后发出通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playedidEnd) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    // 添加观察者, 用来监视播放器的变化
+    [_player addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    
+    __weak  ViewController *me = self;
+    __weak AVPlayer *weakPlayer = _player;
+    
+    [_player addPeriodicTimeObserverForInterval:CMTimeMake(1,1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        
+        // 获取当前播放的时间
+        float currentTime = weakPlayer.currentItem.currentTime.value/weakPlayer.currentItem.currentTime.timescale;
+        
+        me.sliderProgress.value = currentTime;
+        
+        // 计算缓冲进度
+        NSTimeInterval  timeInterval = [me availableDuration];
+        NSLog(@"Time Interval:%f", timeInterval);
+        CMTime duration = weakPlayer.currentItem.duration;
+        CGFloat  totalDuration = CMTimeGetSeconds(duration);
+        
+        // 更新缓冲进度
+        [me.progressView setProgress:timeInterval/totalDuration animated:YES];
+    }];
+}
+
+// 计算缓冲进度
+- (NSTimeInterval)availableDuration {
+    NSArray *loadedTimeRanges = [[_player currentItem] loadedTimeRanges];
+    CMTimeRange timeRange = [loadedTimeRanges.firstObject CMTimeRangeValue];
+    float startSeconds = CMTimeGetSeconds(timeRange.start);
+    float durationSeconds = CMTimeGetSeconds(timeRange.duration);
+    NSTimeInterval result = startSeconds + durationSeconds;
+    return result;
+}
+
+// 播放
+- (IBAction)doPlay:(id)sender {
+    if (_isPlaying) {
+        [_player pause];
+        _isPlaying = NO;
+        [self.playButton setTitle:@"播放" forState:UIControlStateNormal];
+    } else {
+        [_player play];
+        [self.playButton setTitle:@"暂停" forState:UIControlStateNormal];
+        _isPlaying = YES;
+        self.sliderProgress.maximumValue = _player.currentItem.duration.value/_player.currentItem.duration.timescale;
+    }
+}
+
+// 跳到指定时间播放
+- (IBAction)doChangeProgress:(id)sender {
+    [_player seekToTime:CMTimeMake(self.sliderProgress.value, 1)];
+}
+
+// 上一首
+- (IBAction)doForward:(id)sender {
+    if (_currentPlayIndex-1 >= 0) {
+        AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:_arrayPlayList[_currentPlayIndex-1]];
+        [_player replaceCurrentItemWithPlayerItem:item];
+        [_player play];
+        _currentPlayIndex--;
+    }
+}
+
+// 下一首
+- (IBAction)doNext:(id)sender {
+    if (_currentPlayIndex+1 < _arrayPlayList.count) {
+        AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:_arrayPlayList[_currentPlayIndex+1]];
+        [_player replaceCurrentItemWithPlayerItem:item];
+        [_player play];
+        _currentPlayIndex++;
+    }
+}
+
+// 播放完毕后调用的方法
+- (void)playedidEnd {
+    NSLog(@"播放完毕");
+}
+
+
+// 观察者方法, 用来监听播放器状态
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"status"]) {
+        if (_player.status == AVPlayerItemStatusReadyToPlay) {
+            [self.playButton setEnabled:YES];
+        }
+    }
+}
+
+@end
+~~~~
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h2 id="">一个简单的应用, 直接上代码:</h2>
+
+<pre class=" language-c"><code class=" language-c"><span class="token comment" spellcheck="true">//
+</span><span class="token comment" spellcheck="true">//  ViewController.m
+</span><span class="token comment" spellcheck="true">//  MyPlayer
+</span><span class="token comment" spellcheck="true">//
+</span><span class="token comment" spellcheck="true">//  Created by GaoHe on 16/7/12.
+</span><span class="token comment" spellcheck="true">//  Copyright © 2016年 GaoHe. All rights reserved.
+</span><span class="token comment" spellcheck="true">//
+</span>
+<span class="token comment" spellcheck="true">
+// 引入 AVFoundation 框架
+</span><span class="token property">#import &lt;AVFoundation/AVFoundation.h&gt;</span>
+<span class="token property">#import </span><span class="token string">"ViewController.h"</span>
+
+@interface <span class="token class-name">ViewController</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // 播放列表
+</span>    NSArray <span class="token operator">*</span>_arrayPlayList<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 播放器
+</span>    AVPlayer <span class="token operator">*</span>_player<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 当前播放的引索值
+</span>    <span class="token keyword">int</span> _currentPlayIndex<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 播放状态
+</span>    BOOL _isPlaying<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 播放进度 Slider
+</span>@property <span class="token punctuation">(</span>weak<span class="token punctuation">,</span> nonatomic<span class="token punctuation">)</span>IBOutlet UISlider <span class="token operator">*</span>sliderProgress<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+// 缓存进度
+</span>@property <span class="token punctuation">(</span>weak<span class="token punctuation">,</span> nonatomic<span class="token punctuation">)</span> IBOutlet UIProgressView <span class="token operator">*</span>progressView<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+//播放按钮
+</span>@property <span class="token punctuation">(</span>weak<span class="token punctuation">,</span> nonatomic<span class="token punctuation">)</span> IBOutlet UIButton <span class="token operator">*</span>playButton<span class="token punctuation">;</span>
+
+@end
+
+@implementation ViewController
+
+<span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>viewDidLoad <span class="token punctuation">{</span>
+    <span class="token punctuation">[</span>super viewDidLoad<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    self<span class="token punctuation">.</span>view<span class="token punctuation">.</span>backgroundColor <span class="token operator">=</span> <span class="token punctuation">[</span>UIColor grayColor<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true"> // 程序开始时没有播放
+</span>    <span class="token punctuation">[</span>self<span class="token punctuation">.</span>playButton setEnabled<span class="token punctuation">:</span>NO<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    self<span class="token punctuation">.</span>sliderProgress<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    _isPlaying <span class="token operator">=</span> NO<span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true"> // 设置播放列表
+</span>    NSURL <span class="token operator">*</span>playUrl_1 <span class="token operator">=</span> <span class="token punctuation">[</span>NSURL URLWithString<span class="token punctuation">:</span>playUrl_1<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    NSURL <span class="token operator">*</span>playUrl_2 <span class="token operator">=</span> <span class="token punctuation">[</span>NSURL URLWithString<span class="token punctuation">:</span>playUrl_2<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    NSURL <span class="token operator">*</span>playUrl_3 <span class="token operator">=</span> <span class="token punctuation">[</span>NSURL URLWithString<span class="token punctuation">:</span>playUrl_3<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    NSURL <span class="token operator">*</span>playUrl_4 <span class="token operator">=</span> <span class="token punctuation">[</span>NSURL URLWithString<span class="token punctuation">:</span>playUrl_4<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    _arrayPlayList <span class="token operator">=</span> @<span class="token punctuation">[</span>playUrl_1<span class="token punctuation">,</span> playUrl_2<span class="token punctuation">,</span> playUrl_3<span class="token punctuation">,</span> playUrl_4<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    AVPlayerItem <span class="token operator">*</span>item <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>AVPlayerItem alloc<span class="token punctuation">]</span> initWithURL<span class="token punctuation">:</span>playUrl_1<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true"> // 初始化播放器, 默认播放第一首
+</span>    _player <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>AVPlayer alloc<span class="token punctuation">]</span> initWithPlayerItem<span class="token punctuation">:</span>item<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 播放完成后发出通知
+</span>    <span class="token punctuation">[</span><span class="token punctuation">[</span>NSNotificationCenter defaultCenter<span class="token punctuation">]</span> addObserver<span class="token punctuation">:</span>self selector<span class="token punctuation">:</span>@<span class="token function">selector<span class="token punctuation">(</span></span>playedidEnd<span class="token punctuation">)</span> name<span class="token punctuation">:</span>AVPlayerItemDidPlayToEndTimeNotification object<span class="token punctuation">:</span>nil<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 添加观察者, 用来监视播放器的变化
+</span>    <span class="token punctuation">[</span>_player addObserver<span class="token punctuation">:</span>self forKeyPath<span class="token punctuation">:</span>@<span class="token string">"status"</span> options<span class="token punctuation">:</span>NSKeyValueObservingOptionNew <span class="token class-name">context</span><span class="token punctuation">:</span>nil<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    __weak  ViewController <span class="token operator">*</span>me <span class="token operator">=</span> self<span class="token punctuation">;</span>
+    __weak AVPlayer <span class="token operator">*</span>weakPlayer <span class="token operator">=</span> _player<span class="token punctuation">;</span>
+
+    <span class="token punctuation">[</span>_player addPeriodicTimeObserverForInterval<span class="token punctuation">:</span><span class="token function">CMTimeMake<span class="token punctuation">(</span></span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span> queue<span class="token punctuation">:</span><span class="token function">dispatch_get_main_queue<span class="token punctuation">(</span></span><span class="token punctuation">)</span> usingBlock<span class="token punctuation">:</span><span class="token operator">^</span><span class="token punctuation">(</span>CMTime time<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+       <span class="token comment" spellcheck="true"> // 获取当前播放的时间
+</span>        <span class="token keyword">float</span> currentTime <span class="token operator">=</span> weakPlayer<span class="token punctuation">.</span>currentItem<span class="token punctuation">.</span>currentTime<span class="token punctuation">.</span>value<span class="token operator">/</span>weakPlayer<span class="token punctuation">.</span>currentItem<span class="token punctuation">.</span>currentTime<span class="token punctuation">.</span>timescale<span class="token punctuation">;</span>
+
+        me<span class="token punctuation">.</span>sliderProgress<span class="token punctuation">.</span>value <span class="token operator">=</span> currentTime<span class="token punctuation">;</span>
+
+       <span class="token comment" spellcheck="true"> // 计算缓冲进度
+</span>        NSTimeInterval  timeInterval <span class="token operator">=</span> <span class="token punctuation">[</span>me availableDuration<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token function">NSLog<span class="token punctuation">(</span></span>@<span class="token string">"Time Interval:%f"</span><span class="token punctuation">,</span> timeInterval<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        CMTime duration <span class="token operator">=</span> weakPlayer<span class="token punctuation">.</span>currentItem<span class="token punctuation">.</span>duration<span class="token punctuation">;</span>
+        CGFloat  totalDuration <span class="token operator">=</span> <span class="token function">CMTimeGetSeconds<span class="token punctuation">(</span></span>duration<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+       <span class="token comment" spellcheck="true"> // 更新缓冲进度
+</span>        <span class="token punctuation">[</span>me<span class="token punctuation">.</span>progressView setProgress<span class="token punctuation">:</span>timeInterval<span class="token operator">/</span>totalDuration animated<span class="token punctuation">:</span>YES<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 计算缓冲进度
+</span><span class="token operator">-</span> <span class="token punctuation">(</span>NSTimeInterval<span class="token punctuation">)</span>availableDuration <span class="token punctuation">{</span>
+    NSArray <span class="token operator">*</span>loadedTimeRanges <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>_player currentItem<span class="token punctuation">]</span> loadedTimeRanges<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    CMTimeRange timeRange <span class="token operator">=</span> <span class="token punctuation">[</span>loadedTimeRanges<span class="token punctuation">.</span>firstObject CMTimeRangeValue<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> startSeconds <span class="token operator">=</span> <span class="token function">CMTimeGetSeconds<span class="token punctuation">(</span></span>timeRange<span class="token punctuation">.</span>start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> durationSeconds <span class="token operator">=</span> <span class="token function">CMTimeGetSeconds<span class="token punctuation">(</span></span>timeRange<span class="token punctuation">.</span>duration<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    NSTimeInterval result <span class="token operator">=</span> startSeconds <span class="token operator">+</span> durationSeconds<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 播放
+</span><span class="token operator">-</span> <span class="token punctuation">(</span>IBAction<span class="token punctuation">)</span>doPlay<span class="token punctuation">:</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>sender <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>_isPlaying<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token punctuation">[</span>_player pause<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        _isPlaying <span class="token operator">=</span> NO<span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>self<span class="token punctuation">.</span>playButton setTitle<span class="token punctuation">:</span>@<span class="token string">"播放"</span> forState<span class="token punctuation">:</span>UIControlStateNormal<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token punctuation">[</span>_player play<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>self<span class="token punctuation">.</span>playButton setTitle<span class="token punctuation">:</span>@<span class="token string">"暂停"</span> forState<span class="token punctuation">:</span>UIControlStateNormal<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        _isPlaying <span class="token operator">=</span> YES<span class="token punctuation">;</span>
+        self<span class="token punctuation">.</span>sliderProgress<span class="token punctuation">.</span>maximumValue <span class="token operator">=</span> _player<span class="token punctuation">.</span>currentItem<span class="token punctuation">.</span>duration<span class="token punctuation">.</span>value<span class="token operator">/</span>_player<span class="token punctuation">.</span>currentItem<span class="token punctuation">.</span>duration<span class="token punctuation">.</span>timescale<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 跳到指定时间播放
+</span><span class="token operator">-</span> <span class="token punctuation">(</span>IBAction<span class="token punctuation">)</span>doChangeProgress<span class="token punctuation">:</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>sender <span class="token punctuation">{</span>
+    <span class="token punctuation">[</span>_player seekToTime<span class="token punctuation">:</span><span class="token function">CMTimeMake<span class="token punctuation">(</span></span>self<span class="token punctuation">.</span>sliderProgress<span class="token punctuation">.</span>value<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 上一首
+</span><span class="token operator">-</span> <span class="token punctuation">(</span>IBAction<span class="token punctuation">)</span>doForward<span class="token punctuation">:</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>sender <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>_currentPlayIndex<span class="token number">-1</span> &gt;<span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        AVPlayerItem <span class="token operator">*</span>item <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>AVPlayerItem alloc<span class="token punctuation">]</span> initWithURL<span class="token punctuation">:</span>_arrayPlayList<span class="token punctuation">[</span>_currentPlayIndex<span class="token number">-1</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>_player replaceCurrentItemWithPlayerItem<span class="token punctuation">:</span>item<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>_player play<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        _currentPlayIndex<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 下一首
+</span><span class="token operator">-</span> <span class="token punctuation">(</span>IBAction<span class="token punctuation">)</span>doNext<span class="token punctuation">:</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>sender <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>_currentPlayIndex<span class="token operator">+</span><span class="token number">1</span> <span class="token operator">&lt;</span> _arrayPlayList<span class="token punctuation">.</span>count<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        AVPlayerItem <span class="token operator">*</span>item <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>AVPlayerItem alloc<span class="token punctuation">]</span> initWithURL<span class="token punctuation">:</span>_arrayPlayList<span class="token punctuation">[</span>_currentPlayIndex<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>_player replaceCurrentItemWithPlayerItem<span class="token punctuation">:</span>item<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>_player play<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        _currentPlayIndex<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// 播放完毕后调用的方法
+</span><span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>playedidEnd <span class="token punctuation">{</span>
+    <span class="token function">NSLog<span class="token punctuation">(</span></span>@<span class="token string">"播放完毕"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">
+// 观察者方法, 用来监听播放器状态
+</span><span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>observeValueForKeyPath<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>keyPath ofObject<span class="token punctuation">:</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>object change<span class="token punctuation">:</span><span class="token punctuation">(</span>NSDictionary <span class="token operator">*</span><span class="token punctuation">)</span>change context<span class="token punctuation">:</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>context <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">[</span>keyPath isEqualToString<span class="token punctuation">:</span>@<span class="token string">"status"</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>_player<span class="token punctuation">.</span>status <span class="token operator">==</span> AVPlayerItemStatusReadyToPlay<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token punctuation">[</span>self<span class="token punctuation">.</span>playButton setEnabled<span class="token punctuation">:</span>YES<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+@end
+</code></pre>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "ios_avplayer.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
