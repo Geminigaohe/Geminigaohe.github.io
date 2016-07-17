@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+
+<center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/icon/ios7-lightbulb-outline.png)</center>
+
+
+>在将字符串写入文件的时候, 可能会出现各种错误,. 例如, 对将要写入的文件用户可能没有写的权限, 或者该目录不存在, 也有可能文件系统没有剩余的空间. 这种情况下, 系统可能无法完成指定操作, 因此, 相应的方法就需要通过某种途径, 将执行结果 (BOOL 类型值) 和错误返回给调用者. 在 Cocoa 中 NSError 这个类可以用来返回方法的错误信息.
+
+
+
+## 举个例子:
+~~~~{c}
+#import <Foundation/Foundation.h>
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        NSString *string = @"GaoHe is a genius";
+        NSError *error = nil;
+
+        // 将 NSString 对象写入文件
+        BOOL success = [string writeToFile:@"/tmp/other.txt" atomically:YES encoding:NSUTF8StringEncoding error:&error]; 
+       
+        // 判断是否写入
+        if (!success) {
+            NSLog(@"Writint failed, error: %@", [error localizedDescription]);
+        } else {
+            NSLog(@"Done writing");
+        }
+    }
+    return 0;
+}
+~~~~
+
+## 观察:
+将 NSString 对象写入文件的方法除了返回一个 BOOL 值外, 还需要 NSError 实例的信息, 观察这个方法:
+
+~~~~{c}
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)useAuxiliaryFile encoding:(NSStringEncoding)enc error:(NSError **)error;
+~~~~
+
+最后一个参数传入的是 NSError 实例的二级指针, 在[这篇文章中](https://geminigaohe.github.io/c_note_1.html)讨论过, 如果函数除了返回值, 还需要返回更多的数据, 则可以使用**引用传递** , 也就是说, 在调用函数或方法时, 传入一个指向某个变量的引用 (地址). 这个变量可以直接保存或修改相应的值, 其内存地址就是要传入的引用. 
+
+之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 有也就是说 **error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.**
+
+为什么没有创建 NSError 的实例? 这是为了避免在没有发生错误时, 创建没有必要的 NSError 实例, 如果在执行该方法时发生了错误, 那么该方法只会负责创建一个新的 NSError 对象.
+
+## 注意:
+
+如果某个方法的参数要通过引用传入的 NSError 指针, 那么这个返回值就因该表明 (执行方法时) 是否有错误发生. 在返回值为 YES 时, 不应该访问 NSError 对象. 因为此时 NSError 对象还并不存在, 访问不存在的对象会导致程序崩溃.
+
+祝编码愉快~
+<center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png) 
+</center>
+
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/icon/ios7-lightbulb-outline.png" alt="" title=""></center><p></p>
+
+<blockquote>
+  <p>在将字符串写入文件的时候, 可能会出现各种错误,. 例如, 对将要写入的文件用户可能没有写的权限, 或者该目录不存在, 也有可能文件系统没有剩余的空间. 这种情况下, 系统可能无法完成指定操作, 因此, 相应的方法就需要通过某种途径, 将执行结果 (BOOL 类型值) 和错误返回给调用者. 在 Cocoa 中 NSError 这个类可以用来返回方法的错误信息.</p>
+</blockquote>
+
+<h2 id="">举个例子:</h2>
+
+<pre class=" language-c"><code class=" language-c"><span class="token property">#import &lt;Foundation/Foundation.h&gt;</span>
+
+<span class="token keyword">int</span> <span class="token function">main<span class="token punctuation">(</span></span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    @autoreleasepool <span class="token punctuation">{</span>
+        NSString <span class="token operator">*</span>string <span class="token operator">=</span> @<span class="token string">"GaoHe is a genius"</span><span class="token punctuation">;</span>
+        NSError <span class="token operator">*</span>error <span class="token operator">=</span> nil<span class="token punctuation">;</span>
+
+       <span class="token comment" spellcheck="true"> // 将 NSString 对象写入文件
+</span>        BOOL success <span class="token operator">=</span> <span class="token punctuation">[</span>string writeToFile<span class="token punctuation">:</span>@<span class="token string">"/tmp/other.txt"</span> atomically<span class="token punctuation">:</span>YES encoding<span class="token punctuation">:</span>NSUTF8StringEncoding error<span class="token punctuation">:</span><span class="token operator">&amp;</span>error<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+
+       <span class="token comment" spellcheck="true"> // 判断是否写入
+</span>        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">NSLog<span class="token punctuation">(</span></span>@<span class="token string">"Writint failed, error: %@"</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>error localizedDescription<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token function">NSLog<span class="token punctuation">(</span></span>@<span class="token string">"Done writing"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+<h2 id="">观察:</h2>
+
+<p>将 NSString 对象写入文件的方法除了返回一个 BOOL 值外, 还需要 NSError 实例的信息, 观察这个方法:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>BOOL<span class="token punctuation">)</span>writeToFile<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>path atomically<span class="token punctuation">:</span><span class="token punctuation">(</span>BOOL<span class="token punctuation">)</span>useAuxiliaryFile encoding<span class="token punctuation">:</span><span class="token punctuation">(</span>NSStringEncoding<span class="token punctuation">)</span>enc error<span class="token punctuation">:</span><span class="token punctuation">(</span>NSError <span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span>error<span class="token punctuation">;</span>
+</code></pre>
+
+<p>最后一个参数传入的是 NSError 实例的二级指针, 在<a href="https://geminigaohe.github.io/c_note_1.html">这篇文章中</a>讨论过, 如果函数除了返回值, 还需要返回更多的数据, 则可以使用<strong>引用传递</strong> , 也就是说, 在调用函数或方法时, 传入一个指向某个变量的引用 (地址). 这个变量可以直接保存或修改相应的值, 其内存地址就是要传入的引用. </p>
+
+<p>之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 有也就是说 <strong>error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.</strong></p>
+
+<p>为什么没有创建 NSError 的实例? 这是为了避免在没有发生错误时, 创建没有必要的 NSError 实例, 如果在执行该方法时发生了错误, 那么该方法只会负责创建一个新的 NSError 对象.</p>
+
+<h2 id="">注意:</h2>
+
+<p>如果某个方法的参数要通过引用传入的 NSError 指针, 那么这个返回值就因该表明 (执行方法时) 是否有错误发生. 在返回值为 YES 时, 不应该访问 NSError 对象. 因为此时 NSError 对象还并不存在, 访问不存在的对象会导致程序崩溃.</p>
+
+<p>祝编码愉快~
+</p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png" alt="" title=""> 
+</center><p></p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "oc_nserror.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
