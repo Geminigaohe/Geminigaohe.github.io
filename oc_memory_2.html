@@ -71,6 +71,130 @@
 </tr>
 </table>
 
+
+##  自己生成并持有对象:
+~~~~{c}
+id obj = [[NSObect alloc] init]; // alloc 方法
+
+id obj = [NSObject new]; // new 方法
+
+id obj = [NSObject copy]; // copy 方法
+
+id obj = [NSObject mutableCopy]; //mutableCopy 方法
+~~~~
+
+只有以  `alloc`/ `new`/ `copy`/ `mutableCopy` 开头并且以驼峰写法的方法才能自己生成并持有对象, 如:
+
+* initWithSomething
+* copyFormThere
+
+其他命名方式就无法自己生成并持有对象, 如:
+
+* initsomething
+* mutablecopy
+## 非自己生成的对象, 自己也能持有:
+~~~~{c}
+NSArray *array = [NSArray array]; 
+
+// 取得对象的存在, 但是自己不持有对象
+~~~~
+
+~~~~{c}
+
+NSArray *array_2 = [NSArray array]; 
+
+// 取得对象的存在, 但是自己不持有对象
+
+[array retain]; 
+
+// 自己持有对象
+~~~~
+
+
+## 不在需要自己持有的对象时释放:
+
+~~~~{c}
+// 自己生成并持有对象
+
+id obj = [NSObject new];
+
+//自己持有对象
+
+[obj release]; 
+
+// 释放对象
+
+//===================================
+
+NSArray *array_2 = [NSArray array]; 
+
+// 取得对象的存在, 但是自己不持有对象
+
+[array retain]; 
+
+// 自己持有对象
+
+[array release];
+
+// 释放对象
+~~~~
+
+如果要用某个方法生成对象, 并将其返还给该方法的调用方, 那么它的源码又是怎样的呢?
+
+~~~~{c}
+- (id) allocObject {
+	id obj = [[NSObject alloc] init];
+	//自己持有对象
+	return obj;
+}
+~~~~
+
+那么, 调用 `[NSArray array]`方法取得对象的存在, 但自己不持有对象, 又是如何实现的呢? 根据前面的命名规定, 不能使用以 `alloc`/ `new`/ `copy`/ `mutableCopy` 开头的方法名, 因此要使用 object 这个方法名:
+
+~~~~{c}
+- (id) object {
+	id obj = [[NSObject alloc] init];
+	//自己持有对象
+	[obj autorelease];
+	// 取得对象的存在, 但自己不持有对象
+}
+~~~~
+
+## 无法释放非自己持有的对象
+
+~~~~{c}
+id obj = [[NSObject alloc] init];
+
+// 自己持有对象
+
+[obj release];
+
+// 对象已经释放
+
+[obj release];
+
+/**
+ 释放之后再次释放已经非自己持有的对象.
+ 访问已经废弃的对象时程序崩溃.
+**/
+~~~~
+
+或者,在 "取得了对象的存在, 但自己不持有对象" 时释放对象
+
+~~~~{c}
+id obj = [obj_1 object];
+
+// 取得对象的存在, 但是自己不持有对象
+
+[obj release];
+
+/**
+ 释放了非自己持有的对象, 程序崩溃
+**/
+
+~~~~
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -122,6 +246,126 @@
 <td>dealloc 方法</td>
 </tr>
 </tbody></table>
+
+<h2 id="">自己生成并持有对象:</h2>
+
+<pre class=" language-c"><code class=" language-c">id obj <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>NSObect alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // alloc 方法
+</span>
+id obj <span class="token operator">=</span> <span class="token punctuation">[</span>NSObject new<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // new 方法
+</span>
+id obj <span class="token operator">=</span> <span class="token punctuation">[</span>NSObject copy<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // copy 方法
+</span>
+id obj <span class="token operator">=</span> <span class="token punctuation">[</span>NSObject mutableCopy<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> //mutableCopy 方法
+</span></code></pre>
+
+<p>只有以  <code>alloc</code>/ <code>new</code>/ <code>copy</code>/ <code>mutableCopy</code> 开头并且以驼峰写法的方法才能自己生成并持有对象, 如:</p>
+
+<ul>
+<li>initWithSomething</li>
+<li>copyFormThere</li>
+</ul>
+
+<p>其他命名方式就无法自己生成并持有对象, 如:</p>
+
+<ul>
+<li>initsomething</li>
+<li>mutablecopy</li>
+</ul>
+
+<h2 id="">非自己生成的对象, 自己也能持有:</h2>
+
+<pre class=" language-c"><code class=" language-c">NSArray <span class="token operator">*</span>array <span class="token operator">=</span> <span class="token punctuation">[</span>NSArray array<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 取得对象的存在, 但是自己不持有对象
+</span></code></pre>
+
+<pre class=" language-c"><code class=" language-c">
+NSArray <span class="token operator">*</span>array_2 <span class="token operator">=</span> <span class="token punctuation">[</span>NSArray array<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 取得对象的存在, 但是自己不持有对象
+</span>
+<span class="token punctuation">[</span>array retain<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 自己持有对象
+</span></code></pre>
+
+<h2 id="">不在需要自己持有的对象时释放:</h2>
+
+<pre class=" language-c"><code class=" language-c"><span class="token comment" spellcheck="true">// 自己生成并持有对象
+</span>
+id obj <span class="token operator">=</span> <span class="token punctuation">[</span>NSObject new<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+//自己持有对象
+</span>
+<span class="token punctuation">[</span>obj release<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 释放对象
+</span><span class="token comment" spellcheck="true">
+//===================================
+</span>
+NSArray <span class="token operator">*</span>array_2 <span class="token operator">=</span> <span class="token punctuation">[</span>NSArray array<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 取得对象的存在, 但是自己不持有对象
+</span>
+<span class="token punctuation">[</span>array retain<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+<span class="token comment" spellcheck="true">
+// 自己持有对象
+</span>
+<span class="token punctuation">[</span>array release<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+// 释放对象
+</span></code></pre>
+
+<p>如果要用某个方法生成对象, 并将其返还给该方法的调用方, 那么它的源码又是怎样的呢?</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>id<span class="token punctuation">)</span> allocObject <span class="token punctuation">{</span>
+    id obj <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>NSObject alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> //自己持有对象
+</span>    <span class="token keyword">return</span> obj<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+<p>那么, 调用 <code>[NSArray array]</code>方法取得对象的存在, 但自己不持有对象, 又是如何实现的呢? 根据前面的命名规定, 不能使用以 <code>alloc</code>/ <code>new</code>/ <code>copy</code>/ <code>mutableCopy</code> 开头的方法名, 因此要使用 object 这个方法名:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>id<span class="token punctuation">)</span> object <span class="token punctuation">{</span>
+    id obj <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>NSObject alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> //自己持有对象
+</span>    <span class="token punctuation">[</span>obj autorelease<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // 取得对象的存在, 但自己不持有对象
+</span><span class="token punctuation">}</span>
+</code></pre>
+
+<h2 id="">无法释放非自己持有的对象</h2>
+
+<pre class=" language-c"><code class=" language-c">id obj <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>NSObject alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+// 自己持有对象
+</span>
+<span class="token punctuation">[</span>obj release<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+// 对象已经释放
+</span>
+<span class="token punctuation">[</span>obj release<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ 释放之后再次释放已经非自己持有的对象.
+ 访问已经废弃的对象时程序崩溃.
+**/</span>
+</code></pre>
+
+<p>或者,在 "取得了对象的存在, 但自己不持有对象" 时释放对象</p>
+
+<pre class=" language-c"><code class=" language-c">id obj <span class="token operator">=</span> <span class="token punctuation">[</span>obj_1 object<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">
+// 取得对象的存在, 但是自己不持有对象
+</span>
+<span class="token punctuation">[</span>obj release<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ 释放了非自己持有的对象, 程序崩溃
+**/</span>
+
+</code></pre>
 <!-- content end -->
 </div>
 <br>
