@@ -69,6 +69,10 @@
 <td>废弃对象</td>
 <td>dealloc 方法</td>
 </tr>
+<tr>
+<td>引用计数器值</td>
+<td>retaincount 方法</td>
+</tr>
 </table>
 
 
@@ -191,9 +195,11 @@ id obj = [obj_1 object];
 /**
  释放了非自己持有的对象, 程序崩溃
 **/
-
 ~~~~
 
+## 总结:
+
+观察对象引用计数的值不是内存管理的好的思路, Cocoa 有完好的解决对象内存管理的方案.
 
 <!-- markdown end -->
 </div>
@@ -244,6 +250,10 @@ id obj = [obj_1 object];
 <tr>
 <td>废弃对象</td>
 <td>dealloc 方法</td>
+</tr>
+<tr>
+<td>引用计数器值</td>
+<td>retaincount 方法</td>
 </tr>
 </tbody></table>
 
@@ -364,8 +374,11 @@ NSArray <span class="token operator">*</span>array_2 <span class="token operator
 <span class="token comment" spellcheck="true">/**
  释放了非自己持有的对象, 程序崩溃
 **/</span>
-
 </code></pre>
+
+<h2 id="">总结:</h2>
+
+<p>观察对象引用计数的值不是内存管理的好的思路, Cocoa 有完好的解决对象内存管理的方案.</p>
 <!-- content end -->
 </div>
 <br>
