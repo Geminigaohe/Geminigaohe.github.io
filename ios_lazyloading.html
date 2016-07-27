@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Keywords" content="blog"/>
     <meta name="Description" content="blog"/>
-    <title>iOS 关于懒加载</title>
+    <title>Simple</title>
     <link rel="shortcut icon" href="/static/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
@@ -68,7 +68,7 @@
 逐句翻译一下:
 
 ~~~~{c}
-// 重写了myLabel 的 getter 方法
+// myLabel 的 getter 方法
 - (UILabel *)myLabel {
     if (!_myLabel) { // 如果没有创建 _myLabel 就进行实例化再返回
         _myLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
@@ -161,7 +161,7 @@
 
 <p>逐句翻译一下:</p>
 
-<pre class=" language-c"><code class=" language-c"><span class="token comment" spellcheck="true">// 重写了myLabel 的 getter 方法
+<pre class=" language-c"><code class=" language-c"><span class="token comment" spellcheck="true">// myLabel 的 getter 方法
 </span><span class="token operator">-</span> <span class="token punctuation">(</span>UILabel <span class="token operator">*</span><span class="token punctuation">)</span>myLabel <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>_myLabel<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token comment" spellcheck="true"> // 如果没有创建 _myLabel 就进行实例化再返回
 </span>        _myLabel <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>UILabel alloc<span class="token punctuation">]</span> initWithFrame<span class="token punctuation">:</span><span class="token function">CGRectMake<span class="token punctuation">(</span></span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
@@ -216,7 +216,7 @@
 <br>
     <div id="disqus_thread"></div>
 	<div class="footer">
-		<p>© Copyright 2016 by GaoHe, Designed by GaoHe</p>
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
 	</div>
 </div>
 <script src="main.js"></script>
