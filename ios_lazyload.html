@@ -77,11 +77,34 @@
 }
 ~~~~
 
-这是思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  
+这是一个思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  就是说, 定义一个实例变量, 我们在程序启动的时候不实例化, 等到需要的时候再加载.
 
-## 还有更常见的做法
+视图控制器 (viewController) 对象的视图 (view) 属性就是懒加载实现. 当将一个视图控制器设置为 window 的根视图对象时, 会第一次调用视图的 `getter` 方法, 因为 window 需要将视图控制器的视图显示出来, 这时, view 属性的 getter 方法亏会判断 _view 这个实例变量是否初始化, 如果没有, 就会调用视图控制器的 `loadView` 方法加载视图, 再执行 `viewDidload` 方法. 就像这样:
 
-### 填充
+~~~~{c}
+- (UIView *)view {
+    if (!_view) {
+        [self loadView];
+        [self viewDidLoad];
+    }
+    return _view;
+}
+~~~~
+
+## 总结:
+
+懒加载的好处:
+
+* 不必将创建对象的代码全部写在 `viewDidLoad` 方法中, 代码的可读性更强.
+
+* 每个控件的 `getter` 方法中分别负责各自的实例化处理, 代码彼此之间的独立性强, 松耦合.
+
+* 在需要时才去实例化, 节省内存开支.
+
+注意:
+
+* 所谓懒加载, 写的是其 getter 方法. 如果是懒加载的话则一定要注意先判断是否已经实例化, 如果没有那么再去进行实例化.
+
 
 <!-- markdown end -->
 </div>
@@ -137,11 +160,34 @@
 </span><span class="token punctuation">}</span>
 </code></pre>
 
-<p>这是思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  </p>
+<p>这是一个思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  就是说, 定义一个实例变量, 我们在程序启动的时候不实例化, 等到需要的时候再加载.</p>
 
-<h2 id="">还有更常见的做法</h2>
+<p>视图控制器 (viewController) 对象的视图 (view) 属性就是懒加载实现. 当将一个视图控制器设置为 window 的根视图对象时, 会第一次调用视图的 <code>getter</code> 方法, 因为 window 需要将视图控制器的视图显示出来, 这时, view 属性的 getter 方法亏会判断 _view 这个实例变量是否初始化, 如果没有, 就会调用视图控制器的 <code>loadView</code> 方法加载视图, 再执行 <code>viewDidload</code> 方法. 就像这样:</p>
 
-<h3 id="">填充</h3>
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>UIView <span class="token operator">*</span><span class="token punctuation">)</span>view <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>_view<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token punctuation">[</span>self loadView<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">[</span>self viewDidLoad<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> _view<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+<h2 id="">总结:</h2>
+
+<p>懒加载的好处:</p>
+
+<ul>
+<li><p>不必将创建对象的代码全部写在 <code>viewDidLoad</code> 方法中, 代码的可读性更强.</p></li>
+<li><p>每个控件的 <code>getter</code> 方法中分别负责各自的实例化处理, 代码彼此之间的独立性强, 松耦合.</p></li>
+<li><p>在需要时才去实例化, 节省内存开支.</p></li>
+</ul>
+
+<p>注意:</p>
+
+<ul>
+<li>所谓懒加载, 写的是其 getter 方法. 如果是懒加载的话则一定要注意先判断是否已经实例化, 如果没有那么再去进行实例化.</li>
+</ul>
 <!-- content end -->
 </div>
 <br>
