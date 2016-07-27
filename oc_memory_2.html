@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Keywords" content="blog"/>
     <meta name="Description" content="blog"/>
-    <title>iOS 内存管理 (2) 关于引用计数和 MRC</title>
+    <title>Simple</title>
     <link rel="shortcut icon" href="/static/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
@@ -39,7 +39,7 @@
 
 ## 内存管理的思考方式:
 
-手动内存管理 (manual reference counting) 很容易受到引用计数器的值得影响, 仅仅是将它递增递减, 实际上合理的思考方式应该是:
+手动内存管理 (manual reference counting) 很容易受到引用计数器的影响, 仅仅是将它递增递减, 实际上合理的思考方式应该是:
 
 * 自己生成的对象, 自己持有.
 * 非自己生成的对象, 自己也能持有.
@@ -219,7 +219,7 @@ id obj = [obj_1 object];
 
 <h2 id="">内存管理的思考方式:</h2>
 
-<p>手动内存管理 (manual reference counting) 很容易受到引用计数器的值得影响, 仅仅是将它递增递减, 实际上合理的思考方式应该是:</p>
+<p>手动内存管理 (manual reference counting) 很容易受到引用计数器的影响, 仅仅是将它递增递减, 实际上合理的思考方式应该是:</p>
 
 <ul>
 <li>自己生成的对象, 自己持有.</li>
@@ -385,7 +385,7 @@ NSArray <span class="token operator">*</span>array_2 <span class="token operator
 <br>
     <div id="disqus_thread"></div>
 	<div class="footer">
-		<p>© Copyright 2016 by GaoHe, Designed by GaoHe</p>
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
 	</div>
 </div>
 <script src="main.js"></script>
