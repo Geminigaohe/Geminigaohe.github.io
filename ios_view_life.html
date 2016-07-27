@@ -1,0 +1,360 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+<center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/icon/ios7-lightbulb-outline.png)</center>
+
+>标题中所说的3个方法, 都是 UIViewController 的方法，跟 UIViewController 的 view 属性的生命周期息息相关. 接下来我会一一阐述它们的作用以及它们之间的联系.
+
+## loadView
+
+* 什么时候被调用？
+
+每次访问 UIViewController 的 view (比如 controller.view、self.view) 而且 view 为 nil, loadView 方法就会被调用.
+
+* 有什么作用？
+
+loadView 方法是用来负责创建 UIViewController 的 view.
+
+* 默认实现是怎样的？
+
+默认实现即 `[super loadView]` 里面做了什么事情。
+
+1> 它会先去查找与 UIViewController 相关联的 xib 文件, 通过加载 xib 文件来创建 UIViewController 的 view 如果在初始化 UIViewController 指定了 xib 文件名, 就会根据传入的 xib 文件名加载对应的 xib 文件
+
+~~~~{c}
+ [[MJViewController alloc] initWithNibName:@"MJViewController" bundle:nil];  
+~~~~
+如果没有明显地传 xib 文件名, 就会加载跟 UIViewController 同名的xib文件
+~~~~{c}
+ [[MJViewController alloc] init]; // 加载MJViewController.xib  
+~~~~
+
+2> 如果没有找到相关联的 xib 文件, 就会创建一个空白的 UIView, 然后赋值给 UIViewController 的 view 属性, 大致如下:
+
+~~~~{c}
+self.view = [[[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame] autorelease];  
+~~~~
+
+`[super loadView]` 里面就大致完成1> 和2> 中叙述的内容.
+
+* 怎样正确使用这个方法？
+
+大家都知道 UIViewController 的 view 可以通过 xib 文件来创建, 但是在某些情况下, xib 不是那么地灵活, 所以有时候我们想通过代码来创建 UIView, 比如:
+
+~~~~{c}
+self.view = [[[UIWebView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame] autorelease];  
+~~~~
+
+如果想通过代码来创建 UIViewController 的 view, 就要重写 loadView 方法，并且不需要调用 `[super loadView]`, 因为在第3点里面已经提到: 若没有xib文件, `[super loadView]` 默认会创建一个空白的 UIView. 我们既然要通过代码来自定义 UIView, 那么就没必要事先创建一个空白的 UIView, 以节省不必要的开销. 正确的做法应该是这样:
+
+~~~~{c}
+ - (void)loadView {  
+     self.view = [[[UIWebView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame] autorelease];  
+ }  
+~~~~
+
+不需要调用 `[super loadView]`, 你调用了也不会出错, 只是造成了一些不必要的开销.
+
+**总结一句话, 苹果设计这个方法就是给我们自定义 UIViewController 的 view 用的.**
+
+___
+ 
+## viewDidLoad
+
+* 什么时候被调用？
+
+无论你是通过 xib 文件还是重写 loadView 创建 UIViewController 的 view, 在 view 创建完毕后, 最终都会调用 viewDidLoad 方法.
+
+* 有什么作用？
+
+一般我们会在这里做界面上的初始化操作, 比如往 view 中添加一些子视图、从数据库或者网络加载模型数据装配到子视图中. 例如：
+
+~~~~{c}
+- (void)viewDidLoad {
+      
+    [super viewDidLoad];  
+          
+    // 添加一个按钮  
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeContactAdd];  
+    [button addTarget:self action:@selector(click) forControlEvents:UIControlEventTouchUpInside];  
+    [self.view addSubview:button];  
+}
+~~~~
+
+___
+
+## viewDidUnload
+
+* 什么时候被调用？
+
+iOS 设备的内存是极其有限的, 如果应用程序占用的内存过多的话, 系统就会对应用程序发出内存警告. UIViewController 就会收到 `didReceiveMemoryWarning` 消息. `didReceiveMemoryWarning` 方法的默认实现是: 如果当前 UIViewController 的 view 不在应用程序的视图层次结构 (View Hierarchy) 中, 即 view 的superview 为 nil 的时候, 就会将 view 释放, 并且调用 viewDidUnload 方法.
+
+* 有什么作用？
+
+上面说到, 发出内存警告且 view 被释放的时候就会调用 viewDidUnload 方法, 所以一般在释放资源, 主要是释放界面元素相关的资源, 将相关的实例都赋值为 nil.
+
+~~~~{c}
+- (void)viewDidUnload {  
+    [super viewDidUnload];  
+    self.name = nil;  
+    self.pwd = nil;  
+}  
+~~~~
+
+* dealloc 方法也是用来释放资源的, 那跟 viewDidUnload 有什么关系？
+
+当发出内存警告调用 viewDidUnload 方法时, 只是释放了 view, 并没有释放 UIViewController，所以并不会调用 dealloc 方法, 即 viewDidUnload 和 dealloc 方法并没有任何关系, dealloc方法只会在 UIViewController 被释放的时候调用.
+
+___
+
+## 三个方法的关系:
+
+1. 第一次访问 UIViewController 的 view 时, view 为 nil，然后就会调用 loadView 方法创建 view.
+
+2. view 创建完毕后会调用 viewDidLoad 方法进行界面元素的初始化.
+
+3. 当内存警告时, 系统可能会释放 UIViewController 的 view, 将 view 赋值为 nil, 并且调用 viewDidUnload 方法.
+
+4. 当再次访问 UIViewControlle r的 view 时, view 已经在 3 中被赋值为 nil,  所以又会调用 loadView 方法重新创建 view.
+ 
+5. view 被重新创建完毕后, 还是会调用 viewDidLoad 方法进行界面元素的初始化.
+
+___
+
+[原文链接](http://blog.csdn.net/q199109106q/article/details/8614044/)
+
+<center>![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png)![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png) ![](https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png) 
+</center>
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/icon/ios7-lightbulb-outline.png" alt="" title=""></center><p></p>
+
+<blockquote>
+  <p>标题中所说的3个方法, 都是 UIViewController 的方法，跟 UIViewController 的 view 属性的生命周期息息相关. 接下来我会一一阐述它们的作用以及它们之间的联系.</p>
+</blockquote>
+
+<h2 id="loadview">loadView</h2>
+
+<ul>
+<li>什么时候被调用？</li>
+</ul>
+
+<p>每次访问 UIViewController 的 view (比如 controller.view、self.view) 而且 view 为 nil, loadView 方法就会被调用.</p>
+
+<ul>
+<li>有什么作用？</li>
+</ul>
+
+<p>loadView 方法是用来负责创建 UIViewController 的 view.</p>
+
+<ul>
+<li>默认实现是怎样的？</li>
+</ul>
+
+<p>默认实现即 <code>[super loadView]</code> 里面做了什么事情。</p>
+
+<p>1&gt; 它会先去查找与 UIViewController 相关联的 xib 文件, 通过加载 xib 文件来创建 UIViewController 的 view 如果在初始化 UIViewController 指定了 xib 文件名, 就会根据传入的 xib 文件名加载对应的 xib 文件</p>
+
+<pre class=" language-c"><code class=" language-c"> <span class="token punctuation">[</span><span class="token punctuation">[</span>MJViewController alloc<span class="token punctuation">]</span> initWithNibName<span class="token punctuation">:</span>@<span class="token string">"MJViewController"</span> bundle<span class="token punctuation">:</span>nil<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+</code></pre>如果没有明显地传 xib 文件名, 就会加载跟 UIViewController 同名的xib文件
+<pre class=" language-c"><code class=" language-c"> <span class="token punctuation">[</span><span class="token punctuation">[</span>MJViewController alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // 加载MJViewController.xib  
+</span></code></pre>
+
+<p>2&gt; 如果没有找到相关联的 xib 文件, 就会创建一个空白的 UIView, 然后赋值给 UIViewController 的 view 属性, 大致如下:</p>
+
+<pre class=" language-c"><code class=" language-c">self<span class="token punctuation">.</span>view <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">[</span>UIView alloc<span class="token punctuation">]</span> initWithFrame<span class="token punctuation">:</span><span class="token punctuation">[</span>UIScreen mainScreen<span class="token punctuation">]</span><span class="token punctuation">.</span>applicationFrame<span class="token punctuation">]</span> autorelease<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+</code></pre>
+
+<p><code>[super loadView]</code> 里面就大致完成1&gt; 和2&gt; 中叙述的内容.</p>
+
+<ul>
+<li>怎样正确使用这个方法？</li>
+</ul>
+
+<p>大家都知道 UIViewController 的 view 可以通过 xib 文件来创建, 但是在某些情况下, xib 不是那么地灵活, 所以有时候我们想通过代码来创建 UIView, 比如:</p>
+
+<pre class=" language-c"><code class=" language-c">self<span class="token punctuation">.</span>view <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">[</span>UIWebView alloc<span class="token punctuation">]</span> initWithFrame<span class="token punctuation">:</span><span class="token punctuation">[</span>UIScreen mainScreen<span class="token punctuation">]</span><span class="token punctuation">.</span>applicationFrame<span class="token punctuation">]</span> autorelease<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+</code></pre>
+
+<p>如果想通过代码来创建 UIViewController 的 view, 就要重写 loadView 方法，并且不需要调用 <code>[super loadView]</code>, 因为在第3点里面已经提到: 若没有xib文件, <code>[super loadView]</code> 默认会创建一个空白的 UIView. 我们既然要通过代码来自定义 UIView, 那么就没必要事先创建一个空白的 UIView, 以节省不必要的开销. 正确的做法应该是这样:</p>
+
+<pre class=" language-c"><code class=" language-c"> <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>loadView <span class="token punctuation">{</span>  
+     self<span class="token punctuation">.</span>view <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">[</span>UIWebView alloc<span class="token punctuation">]</span> initWithFrame<span class="token punctuation">:</span><span class="token punctuation">[</span>UIScreen mainScreen<span class="token punctuation">]</span><span class="token punctuation">.</span>applicationFrame<span class="token punctuation">]</span> autorelease<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+ <span class="token punctuation">}</span>  
+</code></pre>
+
+<p>不需要调用 <code>[super loadView]</code>, 你调用了也不会出错, 只是造成了一些不必要的开销.</p>
+
+<p><strong>总结一句话, 苹果设计这个方法就是给我们自定义 UIViewController 的 view 用的.</strong></p>
+
+<hr>
+
+<h2 id="viewdidload">viewDidLoad</h2>
+
+<ul>
+<li>什么时候被调用？</li>
+</ul>
+
+<p>无论你是通过 xib 文件还是重写 loadView 创建 UIViewController 的 view, 在 view 创建完毕后, 最终都会调用 viewDidLoad 方法.</p>
+
+<ul>
+<li>有什么作用？</li>
+</ul>
+
+<p>一般我们会在这里做界面上的初始化操作, 比如往 view 中添加一些子视图、从数据库或者网络加载模型数据装配到子视图中. 例如：</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>viewDidLoad <span class="token punctuation">{</span>
+
+    <span class="token punctuation">[</span>super viewDidLoad<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+
+   <span class="token comment" spellcheck="true"> // 添加一个按钮  
+</span>    UIButton <span class="token operator">*</span>button <span class="token operator">=</span> <span class="token punctuation">[</span>UIButton buttonWithType<span class="token punctuation">:</span>UIButtonTypeContactAdd<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">[</span>button addTarget<span class="token punctuation">:</span>self action<span class="token punctuation">:</span>@<span class="token function">selector<span class="token punctuation">(</span></span>click<span class="token punctuation">)</span> forControlEvents<span class="token punctuation">:</span>UIControlEventTouchUpInside<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">[</span>self<span class="token punctuation">.</span>view addSubview<span class="token punctuation">:</span>button<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code></pre>
+
+<hr>
+
+<h2 id="viewdidunload">viewDidUnload</h2>
+
+<ul>
+<li>什么时候被调用？</li>
+</ul>
+
+<p>iOS 设备的内存是极其有限的, 如果应用程序占用的内存过多的话, 系统就会对应用程序发出内存警告. UIViewController 就会收到 <code>didReceiveMemoryWarning</code> 消息. <code>didReceiveMemoryWarning</code> 方法的默认实现是: 如果当前 UIViewController 的 view 不在应用程序的视图层次结构 (View Hierarchy) 中, 即 view 的superview 为 nil 的时候, 就会将 view 释放, 并且调用 viewDidUnload 方法.</p>
+
+<ul>
+<li>有什么作用？</li>
+</ul>
+
+<p>上面说到, 发出内存警告且 view 被释放的时候就会调用 viewDidUnload 方法, 所以一般在释放资源, 主要是释放界面元素相关的资源, 将相关的实例都赋值为 nil.</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>viewDidUnload <span class="token punctuation">{</span>  
+    <span class="token punctuation">[</span>super viewDidUnload<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+    self<span class="token punctuation">.</span>name <span class="token operator">=</span> nil<span class="token punctuation">;</span>  
+    self<span class="token punctuation">.</span>pwd <span class="token operator">=</span> nil<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>  
+</code></pre>
+
+<ul>
+<li>dealloc 方法也是用来释放资源的, 那跟 viewDidUnload 有什么关系？</li>
+</ul>
+
+<p>当发出内存警告调用 viewDidUnload 方法时, 只是释放了 view, 并没有释放 UIViewController，所以并不会调用 dealloc 方法, 即 viewDidUnload 和 dealloc 方法并没有任何关系, dealloc方法只会在 UIViewController 被释放的时候调用.</p>
+
+<hr>
+
+<h2 id="">三个方法的关系:</h2>
+
+<ol>
+<li><p>第一次访问 UIViewController 的 view 时, view 为 nil，然后就会调用 loadView 方法创建 view.</p></li>
+<li><p>view 创建完毕后会调用 viewDidLoad 方法进行界面元素的初始化.</p></li>
+<li><p>当内存警告时, 系统可能会释放 UIViewController 的 view, 将 view 赋值为 nil, 并且调用 viewDidUnload 方法.</p></li>
+<li><p>当再次访问 UIViewControlle r的 view 时, view 已经在 3 中被赋值为 nil,  所以又会调用 loadView 方法重新创建 view.</p></li>
+<li><p>view 被重新创建完毕后, 还是会调用 viewDidLoad 方法进行界面元素的初始化.</p></li>
+</ol>
+
+<hr>
+
+<p><a href="http://blog.csdn.net/q199109106q/article/details/8614044/">原文链接</a></p>
+
+<p></p><center><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png" alt="" title=""><img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png" alt="" title=""> <img src="https://raw.githubusercontent.com/Geminigaohe/Geminigaohe.github.io/master/emojis/moyai.png" alt="" title=""> 
+</center><p></p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "ios_view_life.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
