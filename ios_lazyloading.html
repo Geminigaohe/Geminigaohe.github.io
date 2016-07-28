@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Keywords" content="blog"/>
     <meta name="Description" content="blog"/>
-    <title>iOS 关于懒加载</title>
+    <title>Simple</title>
     <link rel="shortcut icon" href="/static/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
@@ -81,7 +81,7 @@
 
 这是一个思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  就是说, 定义一个实例变量, 我们在程序启动的时候不实例化, 等到需要的时候再加载.
 
->视图控制器不会在其被创建出来的那一刻马上创建并载入相应的视图,. 只有当应用需要将某个视图控制器的视图显示到屏幕上时, 相应的视图控制器才会创建其视图. 这种延迟加载 (lazy loading) 视图的做法能提高内存的使用效率.
+>视图控制器不会在其被创建出来的那一刻马上创建并载入相应的视图, 只有当应用需要将某个视图控制器的视图显示到屏幕上时, 相应的视图控制器才会创建其视图. 这种延迟加载 (lazy loading) 视图的做法能提高内存的使用效率.
 
 视图控制器 (viewController) 对象的视图 (view) 属性就是懒加载实现. 当将一个视图控制器设置为 window 的根视图对象时, 会第一次调用视图的 `getter` 方法, 因为 window 需要将视图控制器的视图显示出来, 这时, view 属性的 `getter` 方法亏会判断 `_view` 这个实例变量是否初始化, 如果没有, 就会调用视图控制器的 `loadView` 方法加载视图, 再执行 `viewDidload` 方法. 就像这样:
 
@@ -175,7 +175,7 @@
 <p>这是一个思路: "需要实例变量, 没有创建, 就创建后加载; 需要实例变量, 已经创建, 直接加载, 不需要时不进行加载".  就是说, 定义一个实例变量, 我们在程序启动的时候不实例化, 等到需要的时候再加载.</p>
 
 <blockquote>
-  <p>视图控制器不会在其被创建出来的那一刻马上创建并载入相应的视图,. 只有当应用需要将某个视图控制器的视图显示到屏幕上时, 相应的视图控制器才会创建其视图. 这种延迟加载 (lazy loading) 视图的做法能提高内存的使用效率.</p>
+  <p>视图控制器不会在其被创建出来的那一刻马上创建并载入相应的视图, 只有当应用需要将某个视图控制器的视图显示到屏幕上时, 相应的视图控制器才会创建其视图. 这种延迟加载 (lazy loading) 视图的做法能提高内存的使用效率.</p>
 </blockquote>
 
 <p>视图控制器 (viewController) 对象的视图 (view) 属性就是懒加载实现. 当将一个视图控制器设置为 window 的根视图对象时, 会第一次调用视图的 <code>getter</code> 方法, 因为 window 需要将视图控制器的视图显示出来, 这时, view 属性的 <code>getter</code> 方法亏会判断 <code>_view</code> 这个实例变量是否初始化, 如果没有, 就会调用视图控制器的 <code>loadView</code> 方法加载视图, 再执行 <code>viewDidload</code> 方法. 就像这样:</p>
@@ -216,7 +216,7 @@
 <br>
     <div id="disqus_thread"></div>
 	<div class="footer">
-		<p>© Copyright 2016 by GaoHe, Designed by GaoHe</p>
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
 	</div>
 </div>
 <script src="main.js"></script>
