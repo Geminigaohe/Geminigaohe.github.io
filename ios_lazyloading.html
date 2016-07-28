@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Keywords" content="blog"/>
     <meta name="Description" content="blog"/>
-    <title>iOS 关于懒加载</title>
+    <title>Simple</title>
     <link rel="shortcut icon" href="/static/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
@@ -96,6 +96,34 @@
 ~~~~
 
 [loadView、viewDidLoad 及 viewDidUnload 的关系 (转载)](https://geminigaohe.github.io/ios_view_life.html)
+
+## 死循环
+
+观察这块懒加载代码:
+
+~~~~{c}
+- (NSArray *)carGroups{
+    if (self.carGroups == nil) {
+        /*
+            初始化操作
+        */
+    }
+    return _carGroups;
+}
+~~~~
+
+这已经造成了死循环. `self.carGroups` 相当于调用对象的 `getter` 方法: `[self carGroups]`, 方法调用自己, 造成死循环, 正确的代码:
+
+~~~~{c}
+- (NSArray *)carGroups{
+    if (_carGroups == nil) {
+        /*
+            初始化操作
+        */
+    }
+    return _carGroups;
+}
+~~~~
 
 ## 总结:
 
@@ -191,6 +219,32 @@
 
 <p><a href="https://geminigaohe.github.io/ios_view_life.html">loadView、viewDidLoad 及 viewDidUnload 的关系 (转载)</a></p>
 
+<h2 id="">死循环</h2>
+
+<p>观察这块懒加载代码:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>NSArray <span class="token operator">*</span><span class="token punctuation">)</span>carGroups<span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>self<span class="token punctuation">.</span>carGroups <span class="token operator">==</span> nil<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">/*
+            初始化操作
+        */</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> _carGroups<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+<p>这已经造成了死循环. <code>self.carGroups</code> 相当于调用对象的 <code>getter</code> 方法: <code>[self carGroups]</code>, 方法调用自己, 造成死循环, 正确的代码:</p>
+
+<pre class=" language-c"><code class=" language-c"><span class="token operator">-</span> <span class="token punctuation">(</span>NSArray <span class="token operator">*</span><span class="token punctuation">)</span>carGroups<span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>_carGroups <span class="token operator">==</span> nil<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">/*
+            初始化操作
+        */</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> _carGroups<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
 <h2 id="">总结:</h2>
 
 <p>懒加载的好处:</p>
@@ -216,7 +270,7 @@
 <br>
     <div id="disqus_thread"></div>
 	<div class="footer">
-		<p>© Copyright 2016 by GaoHe, Designed by GaoHe</p>
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
 	</div>
 </div>
 <script src="main.js"></script>
