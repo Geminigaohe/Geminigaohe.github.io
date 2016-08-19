@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Keywords" content="blog"/>
     <meta name="Description" content="blog"/>
-    <title>关于 NSError</title>
+    <title>Simple</title>
     <link rel="shortcut icon" href="/static/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
@@ -65,7 +65,7 @@ int main(int argc, const char * argv[]) {
 
 最后一个参数传入的是 NSError 实例的二级指针, 在[这篇文章中](https://geminigaohe.github.io/c_note_1.html)讨论过, 如果函数除了返回值, 还需要返回更多的数据, 则可以使用**引用传递** , 也就是说, 在调用函数或方法时, 传入一个指向某个变量的引用 (地址). 这个变量可以直接保存或修改相应的值, 其内存地址就是要传入的引用. 
 
-之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 有也就是说 **error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.**
+之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 也就是说 **error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.**
 
 为什么没有创建 NSError 的实例? 这是为了避免在没有发生错误时, 创建没有必要的 NSError 实例, 如果在执行该方法时发生了错误, 那么该方法只会负责创建一个新的 NSError 对象.
 
@@ -120,7 +120,7 @@ int main(int argc, const char * argv[]) {
 
 <p>最后一个参数传入的是 NSError 实例的二级指针, 在<a href="https://geminigaohe.github.io/c_note_1.html">这篇文章中</a>讨论过, 如果函数除了返回值, 还需要返回更多的数据, 则可以使用<strong>引用传递</strong> , 也就是说, 在调用函数或方法时, 传入一个指向某个变量的引用 (地址). 这个变量可以直接保存或修改相应的值, 其内存地址就是要传入的引用. </p>
 
-<p>之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 有也就是说 <strong>error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.</strong></p>
+<p>之所以要用二重指针作为参数,是因为需要为 NSError 分配内存, 也就是说 <strong>error 本身存取的内容会改变,而参数传递属于拷贝传值, 必须将指针的地址传过去,通过指针的地址访问指针, 才改变的是指针的值.</strong></p>
 
 <p>为什么没有创建 NSError 的实例? 这是为了避免在没有发生错误时, 创建没有必要的 NSError 实例, 如果在执行该方法时发生了错误, 那么该方法只会负责创建一个新的 NSError 对象.</p>
 
@@ -137,7 +137,7 @@ int main(int argc, const char * argv[]) {
 <br>
     <div id="disqus_thread"></div>
 	<div class="footer">
-		<p>© Copyright 2016 by GaoHe, Designed by GaoHe</p>
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
 	</div>
 </div>
 <script src="main.js"></script>
